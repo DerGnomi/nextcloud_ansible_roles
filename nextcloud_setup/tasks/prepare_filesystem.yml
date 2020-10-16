@@ -24,7 +24,6 @@
     mode: '0644'
   loop:
     - 'done.config'
-    - 'proxy.config'
 - name: 'template copy files'
   template:
     src: 'templates/{{item}}.j2'
@@ -35,4 +34,5 @@
   loop:
     - 'db.config'
     - 'smtp.config'
+    - 'proxy.config'
 ...

@@ -1,5 +1,4 @@
 ---
-- include_vars: 'secret.yml'
 - name: 'Create nc_backup group'
   group:
     name: 'nc_backup'
@@ -38,8 +37,8 @@
   become: true
   become_user: 'nc_backup'
   shell: >-
-    cd $HOME; scp -P 1509 /home/nc_backup/backup.tar.bz2
-    root@backup.lazarus-network.org:/root/nc_backup/backup_{{ ansible_date_time.weekday_number }}.tar.bz2
+    cd $HOME; scp -P {{ ssh_port }} /home/nc_backup/backup.tar.bz2
+    {{ backup user }}@{{ backup_server_hostname }}:/root/nc_backup/backup_{{ ansible_date_time.weekday_number }}.tar.bz2
 - name: 'cleanup'
   file:
     path: '{{item}}'

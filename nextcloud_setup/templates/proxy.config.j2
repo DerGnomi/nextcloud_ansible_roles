@@ -2,14 +2,14 @@
 $CONFIG = array (
   'trusted_proxies' =>                                                                                                                                                                                             
   array (
-    0 => '5.189.157.83',
+    0 => '{{ server_ip }}',
   ),  
   'forwarded_for_headers' =>
   array (
     0 => 'HTTP_X_FORWARDED',
     1 => 'HTTP_X_FORWARDED_FOR',
   ),
-  'overwrite.cli.url' => 'http://cloud.lazarus-network.org',
-  'overwritehost' => 'cloud.lazarus-network.org',
+  'overwrite.cli.url' => 'http://{{ website_url }}',
+  'overwritehost' => '{{ website_url }}',
   'overwriteprotocol' => 'https',
 );
