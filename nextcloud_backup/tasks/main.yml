@@ -1,0 +1,50 @@
+---
+- include_vars: 'secret.yml'
+- name: 'Create nc_backup group'
+  group:
+    name: 'nc_backup'
+    state: 'present'
+- name: 'Create nc_backup user'
+  user:
+    name: 'nc_backup'
+    group: 'nc_backup'
+- name: 'copy priv key to home'
+  template:
+    src: 'templates/priv_key.j2'
+    dest: '/home/nc_backup/.ssh/nc_backup_id_rsa'
+    owner: 'nc_backup'
+    group: 'nc_backup'
+    mode: '0644'
+- name: 'Create Database dump'
+  shell: >-
+    docker exec nextcloud_db_1 /usr/bin/mysqldump -u nextcloud
+    --password={{ nc_db_user_pw }} nextcloud >
+    /var/lib/nextcloud-docker/nextcloud-bak.sql
+- name: 'compress dirs to backup'
+  archive:
+    path:
+      - '/var/lib/nextcloud-docker/nextcloud/data'
+      - '/var/lib/nextcloud-docker/nextcloud-back.sql'
+    dest: '/home/nc_backup/backup.tar.bz2'
+    format: 'bz2'
+- name: 'change ownership'
+  file:
+    path: '/home/nc_backup/backup.tar.bz2'
+    owner: 'nc_backup'
+    group: 'nc_backup'
+    mode: '0644'
+    state: 'directory'
+- name: 'copy archive to backuphost'
+  become: true
+  become_user: 'nc_backup'
+  shell: >-
+    cd $HOME; scp -P 1509 /home/nc_backup/backup.tar.bz2
+    root@backup.lazarus-network.org:/root/nc_backup/backup_{{ ansible_date_time.weekday_number }}.tar.bz2
+- name: 'cleanup'
+  file:
+    path: '{{item}}'
+    state: 'absent'
+  loop:
+    - '/home/nc_backup/backup.tar.bz2'
+    - '/var/lib/nextcloud-docker/nextcloud-back.sql'
+...

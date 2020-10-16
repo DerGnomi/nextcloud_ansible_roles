@@ -1,0 +1,38 @@
+---
+- name: 'Create Datafolder'
+  file:
+    path: '{{item}}'
+    owner: 'www-data'
+    group: 'root'
+    state: 'directory'
+  loop:
+    - '/var/lib/nextcloud-docker'
+    - '/var/lib/nextcloud-docker/nextcloud'
+    - '/var/lib/nextcloud-docker/nextcloud/config'
+- name: 'Create Database folder'
+  file:
+    path: '/var/lib/nextcloud-docker/mysql'
+    owner: 'systemd-coredump'
+    group: 'root'
+    state: 'directory'
+- name: 'Copy config file'
+  copy:
+    src: 'files/{{item}}'
+    dest: '/var/lib/nextcloud-docker/nextcloud/config/{{item}}.php'
+    owner: 'www-data'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'done.config'
+    - 'proxy.config'
+- name: 'template copy files'
+  template:
+    src: 'templates/{{item}}.j2'
+    dest: '/var/lib/nextcloud-docker/nextcloud/config/{{item}}.php'
+    onwer: 'www-data'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'db.config'
+    - 'smtp.config'
+...

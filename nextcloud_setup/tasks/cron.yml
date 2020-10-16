@@ -1,0 +1,7 @@
+---
+- name: 'setup croncheck'
+  cron:
+    name: 'Nextcloud Croncheck'
+    minute: '*/5'
+    job: 'docker exec -t nextcloud_nextcloud_1 sh -c  "su -l -s /bin/bash www-data -c ''php /var/www/html/cron.php''"'
+...

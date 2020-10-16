@@ -1,0 +1,15 @@
+---
+- include_vars: 'secret.yml'
+- name: 'configure apache'
+  include_role:
+    name: 'apache_sites'
+  vars:
+    apache_domain: '{{ cloud_domain }}'
+    apache_port: '{{ cloud_port }}'
+- name: 'Prepare Filesystem'
+  import_tasks: 'prepare_filesystem.yml'
+- name: 'Create Container'
+  import_tasks: 'create_container.yml'
+- name: 'setup cron'
+  import_tasks: 'cron.yml'
+...

@@ -1,0 +1,42 @@
+---
+- name: 'Deploy container'
+  docker_compose:
+    project_name: 'nextcloud'
+    definition:
+      version: '3.7'
+      networks:
+        cloud:
+          external: false
+      services:
+        nextcloud:
+          image: 'nextcloud'
+          networks:
+            - 'cloud'
+          ports:
+            - '{{ cloud_port }}:80'
+          volumes:
+            - '/var/lib/nextcloud-docker/nextcloud:/var/www/html'
+          depends_on:
+            - 'db'
+          restart: 'unless-stopped'
+          deploy:
+            resources:
+              limits:
+                cpus: '3'
+                memory: 6G
+              reservations:
+                cpus: '1'
+                memory: 3G
+        db:
+          image: 'mariadb:10'
+          environment:
+            MYSQL_ROOT_PASSWORD: '{{ nc_db_root_pw }}'
+            MYSQL_USER: 'nextcloud'
+            MYSQL_PASSWORD: '{{ nc_db_user_pw }}'
+            MYSQL_DATABASE: 'nextcloud'
+          restart: 'unless-stopped'
+          volumes:
+            - '/var/lib/nextcloud-docker/mysql:/var/lib/mysql'
+          networks:
+            - 'cloud'
+...
